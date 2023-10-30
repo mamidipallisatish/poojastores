@@ -1,11 +1,8 @@
-FROM node:14
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-node AS base
+WORKDIR /app
+EXPOSE 80
 
-WORKDIR /usr/src/app
-
-COPY package.json .
-RUN npm install 
+FROM base AS final
+WORKDIR /app
 COPY . .
-
-EXPOSE 3000
-
-CMD ["node", "index.js"]
+ENTRYPOINT ["dotnet", "YourApp.dll"]
