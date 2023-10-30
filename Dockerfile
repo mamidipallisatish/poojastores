@@ -1,17 +1,13 @@
-FROM node:16.17.0-alpine as builder
-WORKDIR /app
-COPY ./package.json .
-COPY ./yarn.lock .
-RUN yarn install
-COPY . .
-ARG TMDB_V3_API_KEY
-ENV VITE_APP_TMDB_V3_API_KEY=${TMDB_V3_API_KEY}
-ENV VITE_APP_API_ENDPOINT_URL="https://api.themoviedb.org/3"
-RUN yarn build
-
-FROM nginx:stable-alpine
-WORKDIR /usr/share/nginx/html
-RUN rm -rf ./*
-COPY --from=builder /app/dist .
+FROM ubuntu:latest
+RUN apt-get -y update
+RUN apt-get install -y apache2 curl
+RUN apt-get install -y zip
+RUN apt-get install -y unzip
+ADD https://www.free-css.com/assets/files/free-css-templates/download/page261/avalon.zip /var/www/html/
+WORKDIR /var/www/html
+RUN unzip avalon.zip
+RUN cp -rvf avalon/* .
+RUN rm -rf avalon avalon.zip
+ENTRYPOINT ["/usr/sbin/apache2ctl"]
+CMD ["-D", "FOREGROUND"]
 EXPOSE 80
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
